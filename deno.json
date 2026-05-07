@@ -1,0 +1,10 @@
+{
+  "tasks": {
+    "start": "deno run --allow-net --allow-read --allow-env server.js",
+    "dev": "deno run --allow-net --allow-read --allow-env --watch server.js"
+  },
+  "imports": {
+    "hono": "https://deno.land/x/hono/mod.ts",
+    "jose": "https://deno.land/x/jose@v5.2.0/index.ts"
+  }
+}

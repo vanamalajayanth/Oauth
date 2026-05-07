@@ -1,0 +1,26 @@
+[
+  {
+    "id": 1,
+    "username": "john_doe",
+    "email": "john@example.com",
+    "password": "$2a$10$YourHashedPasswordHere1",
+    "fullName": "John Doe",
+    "role": "admin"
+  },
+  {
+    "id": 2,
+    "username": "jane_smith",
+    "email": "jane@example.com",
+    "password": "$2a$10$YourHashedPasswordHere2",
+    "fullName": "Jane Smith",
+    "role": "user"
+  },
+  {
+    "id": 3,
+    "username": "demo",
+    "email": "demo@example.com",
+    "password": "$2a$10$N9qo8uLOickgx2ZMRZoMye",
+    "fullName": "Demo User",
+    "role": "user"
+  }
+]

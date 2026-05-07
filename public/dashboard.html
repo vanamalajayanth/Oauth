@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - Session Authentication</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .navbar {
+      background: white;
+      padding: 15px 30px;
+      border-radius: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .navbar h2 {
+      color: #333;
+      font-size: 24px;
+    }
+
+    .navbar-right {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #666;
+    }
+
+    .user-icon {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 18px;
+    }
+
+    .logout-btn {
+      background: #ff6b6b;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background 0.3s;
+    }
+
+    .logout-btn:hover {
+      background: #ff5252;
+    }
+
+    .content {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .welcome-card {
+      background: white;
+      padding: 40px;
+      border-radius: 10px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      margin-bottom: 30px;
+    }
+
+    .welcome-card h1 {
+      color: #333;
+      margin-bottom: 10px;
+      font-size: 32px;
+    }
+
+    .welcome-card p {
+      color: #666;
+      font-size: 16px;
+      line-height: 1.6;
+    }
+
+    .user-details {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .user-details h2 {
+      color: #333;
+      margin-bottom: 20px;
+      font-size: 20px;
+      border-bottom: 2px solid #667eea;
+      padding-bottom: 10px;
+    }
+
+    .detail-row {
+      display: flex;
+      padding: 15px 0;
+      border-bottom: 1px solid #e0e0e0;
+    }
+
+    .detail-row:last-child {
+      border-bottom: none;
+    }
+
+    .detail-label {
+      font-weight: 600;
+      color: #555;
+      min-width: 150px;
+      font-size: 14px;
+    }
+
+    .detail-value {
+      color: #333;
+      font-size: 14px;
+      flex: 1;
+    }
+
+    .badge {
+      display: inline-block;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 5px 15px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .session-info {
+      background: #f0f4ff;
+      padding: 20px;
+      border-radius: 8px;
+      margin-top: 20px;
+      border-left: 4px solid #667eea;
+    }
+
+    .session-info h3 {
+      color: #333;
+      margin-bottom: 10px;
+      font-size: 14px;
+    }
+
+    .session-info p {
+      color: #666;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .loading {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      background: #667eea;
+      border-radius: 50%;
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+  </style>
+</head>
+<body>
+  <div class="navbar">
+    <h2>📊 Dashboard</h2>
+    <div class="navbar-right">
+      <div class="user-info">
+        <div class="user-icon" id="userInitial">?</div>
+        <div>
+          <div id="userName">Loading...</div>
+          <small id="userRole" style="color: #999;"></small>
+        </div>
+      </div>
+      <form method="POST" action="/logout" style="margin: 0;">
+        <button type="submit" class="logout-btn">🚪 Logout</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="welcome-card">
+      <h1>Welcome! 👋</h1>
+      <p>
+        You have successfully logged in using <strong>JWT (JSON Web Token)</strong> authentication.
+        Your JWT token is securely stored in an HTTP-only cookie and is validated on every request.
+        The token expires after 60 seconds for demonstration purposes.
+      </p>
+    </div>
+
+    <div class="user-details">
+      <h2>Your Profile Information</h2>
+
+      <div class="detail-row">
+        <div class="detail-label">Username</div>
+        <div class="detail-value" id="profileUsername">-</div>
+      </div>
+
+      <div class="detail-row">
+        <div class="detail-label">Full Name</div>
+        <div class="detail-value" id="profileFullName">-</div>
+      </div>
+
+      <div class="detail-row">
+        <div class="detail-label">Email</div>
+        <div class="detail-value" id="profileEmail">-</div>
+      </div>
+
+      <div class="detail-row">
+        <div class="detail-label">Role</div>
+        <div class="detail-value">
+          <span class="badge" id="profileRole">-</span>
+        </div>
+      </div>
+
+      <div class="session-info">
+        <h3>✅ JWT Authentication</h3>
+        <p>
+          • Your JWT token is stored in an HTTP-only cookie<br>
+          • Token is validated on every request to protected routes<br>
+          • JWT contains user data and expiration timestamp<br>
+          • Token expires after 60 seconds (auto-logout)<br>
+          • Stateless authentication - no server-side session storage<br>
+          • Click "Logout" to clear the token cookie
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Fetch user info from the API
+    async function loadUserInfo() {
+      try {
+        const response = await fetch('/api/user');
+        if (response.ok) {
+          const user = await response.json();
+
+          // Update navbar
+          document.getElementById('userName').textContent = user.fullName;
+          document.getElementById('userRole').textContent = `@${user.username}`;
+          document.getElementById('userInitial').textContent = user.fullName.charAt(0).toUpperCase();
+
+          // Update profile section
+          document.getElementById('profileUsername').textContent = user.username;
+          document.getElementById('profileFullName').textContent = user.fullName;
+          document.getElementById('profileEmail').textContent = user.email;
+          document.getElementById('profileRole').textContent = user.role.charAt(0).toUpperCase() + user.role.slice(1);
+        } else {
+          // Redirect to login if not authenticated
+          window.location.href = '/login.html';
+        }
+      } catch (error) {
+        console.error('Failed to load user info:', error);
+        window.location.href = '/login.html';
+      }
+    }
+
+    // Load user info when page loads
+    loadUserInfo();
+  </script>
+</body>
+</html>
